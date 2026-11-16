@@ -30,7 +30,7 @@
   --ribbon-tabs-h: 30px;
   --ribbon-panel-h: 96px;
   --browser-w: 260px;
-  --cmdline-h: 170px;
+  --cmdline-h: 100px;
   --statusbar-h: 24px;
   --radius: 4px;
 
@@ -63,8 +63,8 @@ body { background: var(--bg-app); color: var(--text); font: 13px/1.4 var(--font-
   grid-area: topbar;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 12px;
+  gap: 6px;
+  padding: 0 6px;
   background: var(--bg-topbar);
   border-bottom: 1px solid var(--border);
 }
@@ -79,13 +79,13 @@ body { background: var(--bg-app); color: var(--text); font: 13px/1.4 var(--font-
   align-items: flex-end;
   gap: 2px;
   height: var(--ribbon-tabs-h);
-  padding: 0 8px;
+  padding: 0 20px;
   background: var(--bg-ribbon-tabs);
   border-bottom: 1px solid var(--border);
 }
 .ribbon-tab {
   height: 100%;
-  padding: 0 14px;
+  padding: 0 12px;
   background: none;
   border: 0;
   color: var(--text-muted);
@@ -102,7 +102,7 @@ body { background: var(--bg-app); color: var(--text); font: 13px/1.4 var(--font-
 .ribbon-panel { display: flex; height: var(--ribbon-panel-h); padding: 6px 8px; overflow-x: auto; }
 .ribbon-group { display: flex; flex-direction: column; padding: 0 8px; border-right: 1px solid var(--border); }
 .ribbon-group-buttons { display: flex; flex: 1; gap: 2px; }
-.ribbon-group-label { padding-top: 4px; text-align: center; font-size: 11px; color: var(--text-muted); }
+.ribbon-group-label { padding-top: 2px; text-align: center; font-size: 10px; color: var(--text-muted); }
 .ribbon-btn {
   display: flex;
   flex-direction: column;
@@ -117,7 +117,9 @@ body { background: var(--bg-app); color: var(--text); font: 13px/1.4 var(--font-
   color: var(--text);
   font: inherit;
   font-size: 12px;
+  font-weight: bold;
   cursor: pointer;
+  background-color: red;
 }
 .ribbon-btn svg { width: 30px; height: 30px; }
 .ribbon-btn-label { text-align: center; line-height: 1.15; max-width: 72px; }

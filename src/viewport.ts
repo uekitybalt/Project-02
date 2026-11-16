@@ -49,7 +49,7 @@ export class Viewport {
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.12;
     this.controls.minDistance = 0.5;
-    this.controls.maxDistance = 1500;
+    this.controls.maxDistance = 2000;
     this.controls.maxPolarAngle = Math.PI * 0.499; // stay above the ground; remove to orbit underneath
 
     const canvas = this.renderer.domElement;
