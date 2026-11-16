@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BIM Studio</title>
+  </head>
+  <body>
+    <div id="app">
+      <header id="topbar">
+        <svg class="topbar-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3l9 5v8l-9 5-9-5V8zM3 8l9 5 9-5M12 13v8" />
+        </svg>
+        <span class="topbar-title">BIM Studio</span>
+        <span class="topbar-project">Untitled Project</span>
+      </header>
+      <nav id="ribbon" aria-label="Ribbon"></nav>
+      <aside id="project-browser" aria-label="Project Browser"></aside>
+      <main id="viewport" aria-label="3D viewport"></main>
+      <section id="command-line" aria-label="Command line"></section>
+      <footer id="statusbar"></footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
