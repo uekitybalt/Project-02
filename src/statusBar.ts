@@ -6,11 +6,13 @@ export const UNITS_LABEL = 'Meters';
 export class StatusBar {
   private coords = h('span', 'status-item status-coords');
   private tool = h('span', 'status-item');
+  private info = h('span', 'status-item status-info');
 
   constructor(root: HTMLElement) {
     root.append(
       this.coords,
       this.tool,
+      this.info,
       h('span', 'status-spacer'),
       h('span', 'status-item', `Units: ${UNITS_LABEL}`),
     );
@@ -27,5 +29,10 @@ export class StatusBar {
 
   setTool(name: string): void {
     this.tool.textContent = `Tool: ${name}`;
+  }
+
+  /** Live hint or measurement next to the tool name, e.g. "Length: 3.500 m". */
+  setInfo(text: string): void {
+    this.info.textContent = text;
   }
 }

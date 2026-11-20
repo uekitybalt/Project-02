@@ -13,6 +13,12 @@ export class Viewport {
   /** Called with the ground-plane point under the cursor (or null). */
   onCursorMove: (point: THREE.Vector3 | null) => void = () => {};
 
+  /** Tool hooks. The active tool sets these; they are reset when the tool ends. */
+  onToolMove: (point: THREE.Vector3 | null) => void = () => {};
+  onLeftClick: (point: THREE.Vector3) => void = () => {};
+  /** Right click without dragging, so orbiting doesn't trigger it. */
+  onRightClick: () => void = () => {};
+
   private container: HTMLElement;
   private groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private raycaster = new THREE.Raycaster();
@@ -28,6 +34,12 @@ export class Viewport {
 
     this.scene.background = new THREE.Color(color('--viewport-bg'));
     this.scene.add(this.modelGroup);
+
+    // Lights (needed for walls to be visible).
+    this.scene.add(new THREE.HemisphereLight(0xffffff, 0x444455, 1.6));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.5);
+    sun.position.set(10, 20, 8);
+    this.scene.add(sun);
 
     // Ground grid: 1 m minor lines, 10 m major lines.
     const minor = new THREE.GridHelper(200, 200, color('--grid-minor'), color('--grid-minor'));
@@ -51,12 +63,29 @@ export class Viewport {
     this.controls.minDistance = 0.5;
     this.controls.maxDistance = 2000;
     this.controls.zoomSpeed = 5; // 1 = default, higher = faster, lower = slower
-this.controls.zoomToCursor = true; // zoom toward the mouse pointer, like CAD/Revit
+    this.controls.zoomToCursor = true; // zoom toward the mouse pointer, like CAD/Revit
     this.controls.maxPolarAngle = Math.PI * 0.499; // stay above the ground; remove to orbit underneath
-
+    
     const canvas = this.renderer.domElement;
     canvas.addEventListener('pointermove', (e) => this.updateCursor(e));
     canvas.addEventListener('pointerleave', () => this.onCursorMove(null));
+
+    let downX = 0;
+    let downY = 0;
+    canvas.addEventListener('pointerdown', (e) => {
+      downX = e.clientX;
+      downY = e.clientY;
+    });
+    canvas.addEventListener('pointerup', (e) => {
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) > 4) return; // it was a drag
+      if (e.button === 0) {
+        const p = this.groundPoint(e);
+        if (p) this.onLeftClick(p);
+      } else if (e.button === 2) {
+        this.onRightClick();
+      }
+    });
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
     new ResizeObserver(() => this.resize()).observe(container);
     this.resize();
@@ -93,7 +122,7 @@ this.controls.zoomToCursor = true; // zoom toward the mouse pointer, like CAD/Re
     this.camera.updateProjectionMatrix();
   }
 
-  private updateCursor(e: PointerEvent): void {
+  private groundPoint(e: PointerEvent): THREE.Vector3 | null {
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.pointer.set(
       ((e.clientX - rect.left) / rect.width) * 2 - 1,
@@ -101,6 +130,12 @@ this.controls.zoomToCursor = true; // zoom toward the mouse pointer, like CAD/Re
     );
     this.raycaster.setFromCamera(this.pointer, this.camera);
     const p = this.raycaster.ray.intersectPlane(this.groundPlane, this.hit);
-    this.onCursorMove(p ? this.hit : null);
+    return p ? this.hit.clone() : null;
+  }
+
+  private updateCursor(e: PointerEvent): void {
+    const p = this.groundPoint(e);
+    this.onCursorMove(p);
+    this.onToolMove(p);
   }
 }

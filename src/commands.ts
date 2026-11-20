@@ -7,6 +7,8 @@ export interface CommandContext {
   print(message: string, kind?: LogKind): void;
   clearLog(): void;
   setTool(name: string): void;
+  /** Start the two-click wall tool. Implemented in main.ts. */
+  startWall(): void;
   viewport: Viewport;
 }
 
@@ -70,7 +72,8 @@ export class CommandRegistry {
     if (!cmd) {
       const hints = this.suggest(name, 5).map((s) => s.text);
       ctx.print(
-        `Unknown command "${name}".` + (hints.length ? ` Did you mean: ${hints.join(', ')}?` : ' Type HELP for a list.'),
+        `Unknown command "${name}".` +
+          (hints.length ? ` Did you mean: ${hints.join(', ')}?` : ' Type HELP for a list.'),
         'error',
       );
       return;
@@ -114,8 +117,12 @@ const STUBS: Array<[string, string]> = [
 export function registerBuiltinCommands(registry: CommandRegistry): void {
   registry.register({
     name: 'WALL',
-    description: 'Draw a wall (placeholder)',
-    run: (ctx) => ctx.print('WALL: not implemented yet. Next step: click two points to draw a wall.'),
+    aliases: ['WA'],
+    description: 'Draw walls: click start, click end. Esc or right-click to finish',
+    run: (ctx) => {
+      ctx.startWall();
+      ctx.print('Click the start point of the wall. Esc or right-click to finish.', 'muted');
+    },
   });
 
   for (const [name, description] of STUBS) {
