@@ -50,6 +50,8 @@ export class Viewport {
     this.controls.dampingFactor = 0.12;
     this.controls.minDistance = 0.5;
     this.controls.maxDistance = 2000;
+    this.controls.zoomSpeed = 5; // 1 = default, higher = faster, lower = slower
+this.controls.zoomToCursor = true; // zoom toward the mouse pointer, like CAD/Revit
     this.controls.maxPolarAngle = Math.PI * 0.499; // stay above the ground; remove to orbit underneath
 
     const canvas = this.renderer.domElement;

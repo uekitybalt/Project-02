@@ -19,7 +19,9 @@ export class CommandLine {
   private active = -1; // highlighted suggestion
   private tabBase: string | null = null; // text that Tab-cycling started from
 
-  constructor(root: HTMLElement, registry: CommandRegistry) {
+  // inputRoot = the #command-line section (the "Command:" bar)
+  // logRoot   = the #command-log section (the history panel)
+  constructor(inputRoot: HTMLElement, logRoot: HTMLElement, registry: CommandRegistry) {
     this.registry = registry;
     this.input.type = 'text';
     this.input.spellcheck = false;
@@ -29,7 +31,8 @@ export class CommandLine {
 
     const row = h('div', 'cmd-row');
     row.append(this.box, h('span', 'cmd-prompt', 'Command:'), this.input);
-    root.append(this.log, row);
+    logRoot.append(this.log);
+    inputRoot.append(row);
 
     this.input.addEventListener('input', () => {
       this.historyPos = -1;

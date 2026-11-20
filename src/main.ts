@@ -14,7 +14,7 @@ registerBuiltinCommands(registry);
 // 2. Build the UI pieces. Ribbon and command line both talk to the registry.
 const viewport = new Viewport(byId('viewport'));
 const statusBar = new StatusBar(byId('statusbar'));
-const commandLine = new CommandLine(byId('command-line'), registry);
+const commandLine = new CommandLine(byId('command-line'), byId('command-log'), registry);
 new Ribbon(byId('ribbon'), registry);
 new ProjectBrowser(byId('project-browser'));
 

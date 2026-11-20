@@ -1,5 +1,6 @@
 /* ---------- Theme: change colors and sizes here ---------- */
 :root {
+  
   --bg-app: #17191d;
   --bg-topbar: #121417;
   --bg-panel: #1f2227;
@@ -28,9 +29,10 @@
 
   --topbar-h: 36px;
   --ribbon-tabs-h: 30px;
-  --ribbon-panel-h: 96px;
+  --ribbon-panel-h: 70px;
   --browser-w: 260px;
-  --cmdline-h: 100px;
+  --cmdlog-h: 100px;   /* fixed height of the history log */
+  --cmdrow-h: 28px;    /* height of the "Command:" bar */
   --statusbar-h: 24px;
   --radius: 4px;
 
@@ -39,7 +41,12 @@
 }
 
 /* ---------- Base ---------- */
-*, *::before, *::after { box-sizing: border-box; scrollbar-color: var(--border-strong) transparent; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scrollbar-color: var(--border-strong) transparent;
+}
 html, body { height: 100%; margin: 0; }
 body { background: var(--bg-app); color: var(--text); font: 13px/1.4 var(--font-ui); overflow: hidden; }
 [hidden] { display: none !important; }
@@ -48,14 +55,15 @@ body { background: var(--bg-app); color: var(--text); font: 13px/1.4 var(--font-
 #app {
   height: 100%;
   display: grid;
-  grid-template-columns: var(--browser-w) minmax(0, 1fr);
-  grid-template-rows: var(--topbar-h) auto minmax(0, 1fr) var(--cmdline-h) var(--statusbar-h);
+  grid-template-columns: var(--browser-w) calc(50% - var(--browser-w)) minmax(0, 1fr);
+  grid-template-rows: var(--topbar-h) auto minmax(0, 1fr) var(--cmdlog-h) auto var(--statusbar-h);
   grid-template-areas:
-    "topbar  topbar"
-    "ribbon  ribbon"
-    "browser viewport"
-    "cmd     cmd"
-    "status  status";
+    "topbar  topbar   topbar"
+    "ribbon  ribbon   ribbon"
+    "browser viewport viewport"
+    "log     viewport viewport"
+    "cmd     cmd      cmd"
+    "status  status   status";
 }
 
 /* ---------- Top bar ---------- */
@@ -99,18 +107,26 @@ body { background: var(--bg-app); color: var(--text); font: 13px/1.4 var(--font-
   box-shadow: inset 0 2px 0 var(--accent);
   margin-bottom: -1px;
 }
-.ribbon-panel { display: flex; height: var(--ribbon-panel-h); padding: 6px 8px; overflow-x: auto; }
+.ribbon-panel { display: flex; height: var(--ribbon-panel-h); padding: 2px 8px; overflow-x: auto; }
 .ribbon-group { display: flex; flex-direction: column; padding: 0 8px; border-right: 1px solid var(--border); }
-.ribbon-group-buttons { display: flex; flex: 1; gap: 2px; }
+.ribbon-group-buttons {
+  flex: 1;
+  display: grid;
+  grid-template-rows: repeat(2, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  gap: 0 2px;
+}
 .ribbon-group-label { padding-top: 2px; text-align: center; font-size: 10px; color: var(--text-muted); }
+.ribbon-btn-label { text-align: left; white-space: nowrap; }
 .ribbon-btn {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  gap: 4px;
-  min-width: 58px;
-  padding: 4px 6px;
+  gap: 0px;
+  min-width: 0px;
+  padding: 0px 10px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius);
@@ -119,9 +135,8 @@ body { background: var(--bg-app); color: var(--text); font: 13px/1.4 var(--font-
   font-size: 12px;
   font-weight: bold;
   cursor: pointer;
-  background-color: red;
 }
-.ribbon-btn svg { width: 30px; height: 30px; }
+.ribbon-btn svg { display: none; }
 .ribbon-btn-label { text-align: center; line-height: 1.15; max-width: 72px; }
 .ribbon-btn:hover { background: var(--bg-hover); border-color: var(--border-strong); }
 .ribbon-btn:active { background: var(--bg-pressed); }
@@ -158,35 +173,45 @@ body { background: var(--bg-app); color: var(--text); font: 13px/1.4 var(--font-
 #viewport { grid-area: viewport; position: relative; min-width: 0; min-height: 0; overflow: hidden; background: var(--viewport-bg); }
 #viewport canvas { position: absolute; inset: 0; display: block; outline: none; }
 
-/* ---------- Command line ---------- */
-#command-line {
-  grid-area: cmd;
-  position: relative;
-  z-index: 5;
+/* ---------- Command log + command line ---------- */
+#command-log {
+  grid-area: log;
+  grid-column: 1 / 3;    /* from the left edge to 50% of the window */
+  z-index: 4;            /* sits on top of the viewport's corner */
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;      /* the log never grows past its fixed row height */
   background: var(--bg-panel);
   border-top: 1px solid var(--border-strong);
+  border-right: 1px solid var(--border-strong);
   font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 12px;
 }
-.cmd-log { flex: 1; min-height: 0; overflow-y: auto; padding: 6px 10px; }
+.cmd-log { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 3px 10px; }
 .cmd-line { white-space: pre-wrap; word-break: break-word; }
 .cmd-echo { color: var(--accent); }
 .cmd-muted { color: var(--text-muted); }
 .cmd-success { color: var(--success); }
 .cmd-error { color: var(--error); }
+
+#command-line {
+  grid-area: cmd;
+  position: relative;
+  z-index: 5;
+  background: var(--bg-input);
+  border-top: 1px solid var(--border-strong);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
 .cmd-row {
   position: relative;
-  flex: none;
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 32px;
+  height: var(--cmdrow-h);
   padding: 0 10px;
   background: var(--bg-input);
-  border-top: 1px solid var(--border);
 }
 .cmd-row:focus-within { box-shadow: inset 0 0 0 1px var(--accent); }
 .cmd-prompt { color: var(--accent); user-select: none; }
